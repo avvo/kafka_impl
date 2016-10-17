@@ -12,4 +12,16 @@ defmodule KafkaImpl.Util do
     {:ok, messages}
   end
   def extract_messages(_), do: {:error, "Can't extract messages"}
+
+  def kafka_brokers do
+    case System.get_env("KAFKA_HOSTS") do
+      nil -> {:error, "You must define KAFKA_HOSTS."}
+      hosts ->
+        hosts
+        |> String.split(",")
+        |> Enum.map(fn pair -> String.split(pair, ":") |> List.to_tuple end)
+        |> Enum.map(fn {host, port} -> {host, String.to_integer(port)} end)
+        |> (fn brokers -> {:ok, brokers} end).()
+    end
+  end
 end
