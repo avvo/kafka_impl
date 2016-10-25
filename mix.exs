@@ -2,33 +2,42 @@ defmodule KafkaImpl.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :kafka_impl,
-     version: "0.1.0",
-     elixir: "~> 1.3",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     deps: deps()]
+    [
+      app: :kafka_impl,
+      build_embedded: Mix.env == :prod,
+      deps: deps(),
+      description: description(),
+      elixir: "~> 1.3",
+      package: package(),
+      start_permanent: Mix.env == :prod,
+      version: "0.1.0",
+    ]
   end
 
-  # Configuration for the OTP application
-  #
-  # Type "mix help compile.app" for more information
   def application do
     [applications: []]
   end
 
-  # Dependencies can be Hex packages:
-  #
-  #   {:mydep, "~> 0.3.0"}
-  #
-  # Or git/path repositories:
-  #
-  #   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}
-  #
-  # Type "mix help deps" for more examples and options
   defp deps do
     [
       {:kafka_ex, "~> 0.5.0"},
+    ]
+  end
+
+  defp description do
+    """
+    A wrapper around KafkaEx so you can mock it in test.
+    """
+  end
+
+  defp package do
+    [
+      name: :kafka_impl,
+      files: ["lib", "mix.exs", "CHANGELOG.md", "README.md", "LICENSE.txt"],
+      maintainers: ["Donald Plummer"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/avvo/avrolixr",
+               "Docs" => "https://hexdocs.pm/avrolixr"}
     ]
   end
 end

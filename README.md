@@ -1,10 +1,10 @@
 # KafkaImpl
 
-**TODO: Add description**
+A wrapper around KafkaEx so you can mock it in test.
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
+[Available in Hex](https://hex.pm/packages/kafka_impl), the package can be installed as:
 
   1. Add `kafka_impl` to your list of dependencies in `mix.exs`:
 
