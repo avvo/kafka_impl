@@ -22,3 +22,19 @@ A wrapper around KafkaEx so you can mock it in test.
     end
     ```
 
+## Usage
+
+Need more documentation here, but check out
+[kafkamon](https://github.com/avvo/kafkamon) to see this library in use.
+
+In your `config/config.exs`, add:
+
+```elixir
+config :kafka_impl, :impl, KafkaImpl.KafkaEx
+```
+
+In your `config/test.exs`, add:
+
+```elixir
+config :kafka_impl, :impl, KafkaImpl.KafkaMock
+```
