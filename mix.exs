@@ -21,6 +21,7 @@ defmodule KafkaImpl.Mixfile do
   defp deps do
     [
       {:kafka_ex, "~> 0.5.0"},
+      {:ex_doc, ">= 0.0.0", only: :dev},
     ]
   end
 
