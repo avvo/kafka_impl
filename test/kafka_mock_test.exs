@@ -2,6 +2,7 @@ defmodule KafkaImpl.KafkaMockTest do
   use ExUnit.Case, async: true
 
   alias KafkaImpl.KafkaMock
+  alias KafkaImpl.KafkaMock.TestHelper
 
   setup do
     :ok = case KafkaMock.start_link do
@@ -15,7 +16,7 @@ defmodule KafkaImpl.KafkaMockTest do
   describe "metadata" do
     test "can set and retrieve topics" do
       assert [] == KafkaMock.metadata.topic_metadatas
-      KafkaMock.set_topics(self, ["foo", "bar"])
+      TestHelper.set_topics(self, ["foo", "bar"])
       assert ["foo", "bar"] == KafkaMock.metadata.topic_metadatas |>
         Enum.map(& Map.get(&1, :topic))
     end
@@ -43,7 +44,7 @@ defmodule KafkaImpl.KafkaMockTest do
         ]
       }] == KafkaMock.fetch(topic, partition, offset: offset)
 
-      KafkaMock.send_message(self, {topic, partition, message, offset})
+      TestHelper.send_message(self, {topic, partition, message, offset})
 
       assert [%KafkaEx.Protocol.Fetch.Response{
         topic: topic,
@@ -67,7 +68,7 @@ defmodule KafkaImpl.KafkaMockTest do
         ]
       }] == KafkaMock.fetch(topic, partition, offset: offset)
 
-      KafkaMock.send_messages(self, [
+      TestHelper.send_messages(self, [
         {topic, partition, message1, offset},
         {topic, partition, message2, offset+1}
       ])
@@ -85,6 +86,7 @@ defmodule KafkaImpl.KafkaMockTest do
     topic = "foo"
     offset = 100
     assert %KafkaEx.Protocol.OffsetCommit.Response{topic: topic, partitions: [offset]} ==
-      KafkaMock.offset_commit(:some_worker_pid, %{topic: topic, offset: offset})
+      KafkaMock.offset_commit(:some_worker_pid, %{topic: topic, offset: offset, partition: 0,
+        consumer_group: "kafka_impl"})
   end
 end

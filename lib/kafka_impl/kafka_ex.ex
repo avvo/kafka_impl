@@ -6,6 +6,7 @@ defmodule KafkaImpl.KafkaEx do
   defdelegate earliest_offset(topic, partition, name \\ KafkaEx.Server), to: KafkaEx
   defdelegate fetch(topic, partition, opts \\ []), to: KafkaEx
   defdelegate produce(req, opts \\ []), to: KafkaEx
+  defdelegate offset(topic, partition, time, name \\ KafkaEx.Server), to: KafkaEx
 
   def create_no_name_worker(brokers, consumer_group) do
     GenServer.start_link(KafkaEx.Server, [

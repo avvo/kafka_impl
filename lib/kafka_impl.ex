@@ -21,4 +21,7 @@ defmodule KafkaImpl do
 
   @callback produce(KafkaEx.Protocol.Produce.Request.t, Keyword.t) :: nil | :ok | {:ok, integer} | {:error, :closed} | {:error, :inet.posix} | {:error, any} | iodata | :leader_not_available
   defdelegate produce(request, opts \\ []), to: @impl
+
+  @spec offset(binary, number, :calendar.datetime|atom, atom|pid) :: [KafkaEx.Protocol.Offset.Response.t] | :topic_not_found
+  defdelegate offset(topic, partition, time, name \\ KafkaEx.Server), to: @impl
 end
