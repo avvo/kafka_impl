@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 CHANGELOG inspiration from http://keepachangelog.com/.
 
 ## Unreleased
+
+## [0.2.0] - November 3, 2016
 * Add last_committed_offset_for
 * Move agent handling to Store
 * Move test helper functions to TestHelper
