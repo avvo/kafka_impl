@@ -7,6 +7,9 @@ defmodule KafkaImpl do
   @callback create_no_name_worker(KafkaEx.uri(), String.t) :: Supervisor.on_start_child
   defdelegate create_no_name_worker(brokers, consumer_group), to: @impl
 
+  @callback create_no_name_worker(String.t | atom, KafkaEx.uri(), String.t) :: Supervisor.on_start_child
+  defdelegate create_no_name_worker(server_module, brokers, consumer_group), to: @impl
+
   @callback latest_offset(binary, integer, atom|pid) :: [KafkaEx.Protocol.Offset.Response.t] | :topic_not_found
   defdelegate latest_offset(topic, partition, name \\ KafkaEx.Server), to: @impl
 

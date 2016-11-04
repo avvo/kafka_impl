@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 CHANGELOG inspiration from http://keepachangelog.com/.
 
 ## Unreleased
+* Fix behavior impl for KafkaMock with new create_no_name_worker/3
 
 ## [0.3.0] - November 4, 2016
 * Upgrade to KafkaEx 0.6

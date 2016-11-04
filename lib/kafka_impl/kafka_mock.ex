@@ -15,7 +15,7 @@ defmodule KafkaImpl.KafkaMock do
     }
   end
 
-  def create_no_name_worker(_brokers, _consumer_group) do
+  def create_no_name_worker(_server_module \\ nil, _brokers, _consumer_group) do
     {:ok, :fake_pid}
   end
 
