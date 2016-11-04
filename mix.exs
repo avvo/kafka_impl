@@ -37,8 +37,8 @@ defmodule KafkaImpl.Mixfile do
       files: ["lib", "mix.exs", "CHANGELOG.md", "README.md", "LICENSE.txt"],
       maintainers: ["Donald Plummer"],
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/avvo/avrolixr",
-               "Docs" => "https://hexdocs.pm/avrolixr"}
+      links: %{"GitHub" => "https://github.com/avvo/kafka_impl",
+               "Docs" => "https://hexdocs.pm/kafka_impl"}
     ]
   end
 end
