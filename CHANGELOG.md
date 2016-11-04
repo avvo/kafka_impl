@@ -4,8 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 CHANGELOG inspiration from http://keepachangelog.com/.
 
 ## Unreleased
-* Upgrade to KafkaEx 0.6
 
+## [0.3.0] - November 4, 2016
+* Upgrade to KafkaEx 0.6
 
 ## [0.2.0] - November 3, 2016
 * Add last_committed_offset_for
