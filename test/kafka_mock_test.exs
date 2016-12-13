@@ -89,4 +89,20 @@ defmodule KafkaImpl.KafkaMockTest do
       KafkaMock.offset_commit(:some_worker_pid, %{topic: topic, offset: offset, partition: 0,
         consumer_group: "kafka_impl"})
   end
+
+  test "produce and read_messages" do
+    topic = "fooz"
+    partition = 1
+    message = "okay do it"
+    %KafkaEx.Protocol.Produce.Request{
+      topic:         topic,
+      partition:     partition,
+      required_acks: 1,
+      messages:      [%KafkaEx.Protocol.Produce.Message{
+        value: message
+      }]
+    } |> KafkaMock.produce
+
+    assert [^message] = TestHelper.read_messages topic, partition, self
+  end
 end

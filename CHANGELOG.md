@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 CHANGELOG inspiration from http://keepachangelog.com/.
 
 ## Unreleased
+* Implement storage of produced messages, and TestHelper.read_messages to read them
 
 ## [0.3.1] - November 4, 2016
 * Fix behavior impl for KafkaMock with new create_no_name_worker/3

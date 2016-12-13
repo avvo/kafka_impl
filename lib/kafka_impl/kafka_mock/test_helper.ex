@@ -25,6 +25,10 @@ defmodule KafkaImpl.KafkaMock.TestHelper do
     end)
   end
 
+  def read_messages(topic, partition, requesting_pid) do
+    Store.get({:produce, topic, partition}, [], requesting_pid)
+  end
+
   def last_committed_offset_for(requesting_pid, consumer_group, topic, partition) do
     last_committed_offset_for(requesting_pid, consumer_group, topic, partition, 100)
   end
