@@ -10,7 +10,7 @@ defmodule KafkaImpl.Mixfile do
       elixir: "~> 1.3",
       package: package(),
       start_permanent: Mix.env == :prod,
-      version: "0.3.2",
+      version: "0.3.3",
     ]
   end
 

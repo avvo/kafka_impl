@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 CHANGELOG inspiration from http://keepachangelog.com/.
 
 ## Unreleased
+
+## [0.3.3] - December 13, 2016
 * Implement storage of produced messages, and TestHelper.read_messages to read them
 
 ## [0.3.1] - November 4, 2016
