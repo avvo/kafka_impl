@@ -16,7 +16,7 @@ defmodule KafkaImpl.KafkaMockTest do
   describe "metadata" do
     test "can set and retrieve topics" do
       assert [] == KafkaMock.metadata.topic_metadatas
-      TestHelper.set_topics(self, ["foo", "bar"])
+      TestHelper.set_topics(self(), ["foo", "bar"])
       assert ["foo", "bar"] == KafkaMock.metadata.topic_metadatas |>
         Enum.map(& Map.get(&1, :topic))
     end
@@ -44,7 +44,7 @@ defmodule KafkaImpl.KafkaMockTest do
         ]
       }] == KafkaMock.fetch(topic, partition, offset: offset)
 
-      TestHelper.send_message(self, {topic, partition, message, offset})
+      TestHelper.send_message(self(), {topic, partition, message, offset})
 
       assert [%KafkaEx.Protocol.Fetch.Response{
         topic: topic,
@@ -68,7 +68,7 @@ defmodule KafkaImpl.KafkaMockTest do
         ]
       }] == KafkaMock.fetch(topic, partition, offset: offset)
 
-      TestHelper.send_messages(self, [
+      TestHelper.send_messages(self(), [
         {topic, partition, message1, offset},
         {topic, partition, message2, offset+1}
       ])
@@ -103,6 +103,6 @@ defmodule KafkaImpl.KafkaMockTest do
       }]
     } |> KafkaMock.produce
 
-    assert [^message] = TestHelper.read_messages topic, partition, self
+    assert [^message] = TestHelper.read_messages topic, partition, self()
   end
 end

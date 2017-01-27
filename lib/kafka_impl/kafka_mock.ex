@@ -68,7 +68,7 @@ defmodule KafkaImpl.KafkaMock do
   end
 
   def produce(%{topic: topic, partition: partition, messages: [%{value: message}]}, _opts \\ []) do
-    Store.update(self, fn state ->
+    Store.update(self(), fn state ->
       key = {:produce, topic, partition}
       existing_messages = state |> Map.get(key, [])
       state |> Map.put(key, [message | existing_messages])
@@ -76,7 +76,7 @@ defmodule KafkaImpl.KafkaMock do
   end
 
   def offset_commit(_worker, %{consumer_group: consumer_group, topic: topic, partition: partition, offset: offset}) do
-    Store.update(self, fn state ->
+    Store.update(self(), fn state ->
       state |> Map.put({:offset_commit, consumer_group, topic, partition}, offset)
     end)
 

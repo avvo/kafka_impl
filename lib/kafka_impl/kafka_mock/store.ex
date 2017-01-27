@@ -2,7 +2,7 @@ defmodule KafkaImpl.KafkaMock.Store do
   def start_link, do: Agent.start_link(fn -> %{} end, name: __MODULE__)
 
   def get(key, default) do
-    get(key, default, self)
+    get(key, default, self())
   end
   def get(key, default, pid) do
     case Process.whereis(__MODULE__) do

@@ -7,10 +7,10 @@ defmodule KafkaImpl.Mixfile do
       build_embedded: Mix.env == :prod,
       deps: deps(),
       description: description(),
-      elixir: "~> 1.3",
+      elixir: "~> 1.4",
       package: package(),
       start_permanent: Mix.env == :prod,
-      version: "0.3.3",
+      version: "0.4.1"
     ]
   end
 
@@ -20,8 +20,10 @@ defmodule KafkaImpl.Mixfile do
 
   defp deps do
     [
-      {:kafka_ex, "~> 0.6.0"},
-      {:ex_doc, ">= 0.0.0", only: :dev},
+      {:kafka_ex, "~> 0.6"},
+
+      # NON-PRODUCTION DEPS
+      {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
 
@@ -33,12 +35,14 @@ defmodule KafkaImpl.Mixfile do
 
   defp package do
     [
-      name: :kafka_impl,
       files: ["lib", "mix.exs", "CHANGELOG.md", "README.md", "LICENSE.txt"],
-      maintainers: ["Donald Plummer"],
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/avvo/kafka_impl",
-               "Docs" => "https://hexdocs.pm/kafka_impl"}
+      links: %{
+        "GitHub" => "https://github.com/avvo/kafka_impl",
+        "Docs" => "https://hexdocs.pm/kafka_impl"
+      },
+      maintainers: ["Donald Plummer", "John Fearnside"],
+      name: :kafka_impl
     ]
   end
 end
