@@ -43,6 +43,22 @@ defmodule KafkaImpl.KafkaMock do
     ]
   end
 
+  def offset_fetch(_pid, %KafkaEx.Protocol.OffsetFetch.Request{topic: topic, partition: partition}) do
+    [
+      %KafkaEx.Protocol.OffsetFetch.Response{
+        partitions: [
+          %{
+            error_code: :no_error,
+            metadata: "",
+            offset: 1,
+            partition: partition
+          }
+        ],
+        topic: topic
+      }
+    ]
+  end
+
   def fetch(topic, partition, opts \\ []) do
     offset = Keyword.get(opts, :offset, 0)
 

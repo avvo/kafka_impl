@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 CHANGELOG inspiration from http://keepachangelog.com/.
 
 ## Unreleased
+* Add KafkaImpl.offset_fetch
 
 ## [0.3.3] - December 13, 2016
 * Implement storage of produced messages, and TestHelper.read_messages to read them

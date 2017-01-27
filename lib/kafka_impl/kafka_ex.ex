@@ -7,6 +7,7 @@ defmodule KafkaImpl.KafkaEx do
   defdelegate fetch(topic, partition, opts \\ []), to: KafkaEx
   defdelegate produce(req, opts \\ []), to: KafkaEx
   defdelegate offset(topic, partition, time, name \\ KafkaEx.Server), to: KafkaEx
+  defdelegate offset_fetch(worker_name, offset_fetch_request), to: KafkaEx
 
   def create_no_name_worker(brokers, consumer_group) do
     create_no_name_worker("0.8.2", brokers, consumer_group)

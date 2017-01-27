@@ -27,4 +27,7 @@ defmodule KafkaImpl do
 
   @spec offset(binary, number, :calendar.datetime|atom, atom|pid) :: [KafkaEx.Protocol.Offset.Response.t] | :topic_not_found
   defdelegate offset(topic, partition, time, name \\ KafkaEx.Server), to: @impl
+
+  @callback offset_fetch(atom, KafkaEx.Protocol.OffsetFetch.Request.t) :: [KafkaEx.Protocol.OffsetFetch.Response.t] | :topic_not_found
+  defdelegate offset_fetch(worker_name, offset_fetch_request), to: @impl
 end
