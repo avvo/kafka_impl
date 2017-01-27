@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 CHANGELOG inspiration from http://keepachangelog.com/.
 
 ## Unreleased
+
+## [0.4.2] - January 27, 2017
 * Add KafkaImpl.offset_fetch
 
 ## [0.3.3] - December 13, 2016
