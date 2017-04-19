@@ -65,7 +65,7 @@ defmodule KafkaImpl.KafkaMock do
     records = Store.get(:messages, [])
     |> Enum.filter(fn {^topic, ^partition, _, msg_offset} -> msg_offset >= offset; _ -> false end)
 
-    next_offset = records |> Enum.reduce(nil, fn {_,_,_,msg_offset}, acc ->
+    last_offset = records |> Enum.reduce(nil, fn {_,_,_,msg_offset}, acc ->
       cond do
         acc == nil -> msg_offset
         acc > msg_offset -> acc
@@ -76,10 +76,10 @@ defmodule KafkaImpl.KafkaMock do
     messages = records |> Enum.map(fn {_,_,msg,_} -> msg end)
 
     [%KafkaEx.Protocol.Fetch.Response{
-        topic: topic,
-        partitions: [
-          %{partition: partition, message_set: messages, last_offset: next_offset}
-        ]
+      topic: topic,
+      partitions: [
+        %{partition: partition, message_set: messages, last_offset: last_offset}
+      ]
     }]
   end
 
