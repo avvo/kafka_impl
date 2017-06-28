@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 CHANGELOG inspiration from http://keepachangelog.com/.
 
 ## Unreleased
+
+## [0.4.3] - June 27, 2017
 * Expose KafkaImpl.Util.brokers_parse func
 
 ## [0.4.2] - January 27, 2017
