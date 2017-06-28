@@ -60,4 +60,8 @@ defmodule KafkaImpl.UtilTest do
       assert Util.extract_messages(raw_data) == {:ok, messages}
     end
   end
+
+  test "brokers_parse" do
+    assert {:ok, [{"foo", 10}, {"bar", 20}]} == Util.brokers_parse("foo:10,bar:20")
+  end
 end

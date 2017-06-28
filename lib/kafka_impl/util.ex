@@ -17,12 +17,15 @@ defmodule KafkaImpl.Util do
   def kafka_brokers do
     case System.get_env("KAFKA_HOSTS") do
       nil -> {:error, "You must define KAFKA_HOSTS."}
-      hosts ->
-        hosts
-        |> String.split(",")
-        |> Enum.map(fn pair -> String.split(pair, ":") |> List.to_tuple end)
-        |> Enum.map(fn {host, port} -> {host, String.to_integer(port)} end)
-        |> (fn brokers -> {:ok, brokers} end).()
+      hosts -> brokers_parse(hosts)
     end
+  end
+
+  def brokers_parse(brokers_string) do
+    brokers_string
+    |> String.split(",")
+    |> Enum.map(fn pair -> String.split(pair, ":") |> List.to_tuple end)
+    |> Enum.map(fn {host, port} -> {host, String.to_integer(port)} end)
+    |> (fn brokers -> {:ok, brokers} end).()
   end
 end
