@@ -5,6 +5,9 @@ CHANGELOG inspiration from http://keepachangelog.com/.
 
 ## Unreleased
 
+## [0.4.4] - August 30, 2017
+* Rename @impl attribute for Elixir 1.5 compatibility
+
 ## [0.4.3] - June 27, 2017
 * Expose KafkaImpl.Util.brokers_parse func
 
