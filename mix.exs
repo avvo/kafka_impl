@@ -23,7 +23,8 @@ defmodule KafkaImpl.Mixfile do
       {:kafka_ex, "~> 0.6"},
 
       # NON-PRODUCTION DEPS
-      {:ex_doc, ">= 0.0.0", only: :dev}
+      {:ex_doc, ">= 0.0.0", only: :dev},
+      {:mix_test_watch, "~> 0.1", only: :dev},
     ]
   end
 
