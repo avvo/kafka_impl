@@ -1,6 +1,8 @@
 defmodule KafkaImpl.UtilTest do
   use ExUnit.Case, async: true
 
+  doctest KafkaImpl.Util
+
   alias KafkaImpl.Util
 
   describe ".extract_offset()" do
