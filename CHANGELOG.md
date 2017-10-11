@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 CHANGELOG inspiration from http://keepachangelog.com/.
 
 ## Unreleased
+
+## [0.4.5] - October 10, 2017
 * Remove unused NullHandler
 * Extract KafkaImpl.Util.kafka_ex_worker helper function
 
