@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 CHANGELOG inspiration from http://keepachangelog.com/.
 
 ## Unreleased
+* Remove unused NullHandler
+* Extract KafkaImpl.Util.kafka_ex_worker helper function
 
 ## [0.4.4] - August 30, 2017
 * Rename @impl attribute for Elixir 1.5 compatibility
