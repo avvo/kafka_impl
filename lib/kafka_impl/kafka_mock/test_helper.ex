@@ -1,43 +1,42 @@
 defmodule KafkaImpl.KafkaMock.TestHelper do
   alias KafkaImpl.KafkaMock.Store
 
-  def set_topics(requesting_pid, new_topics) do
-    Store.update(requesting_pid, fn state ->
-      state |> Map.put(:topics, new_topics |> Enum.map(&format_for_kafka_ex/1))
+  alias KafkaEx.Protocol.Fetch.Message
+
+  def set_topics(new_topics) do
+    Store.update(fn state ->
+      Map.put(state, :topics, new_topics |> Enum.map(&format_for_kafka_ex/1))
     end)
   end
 
-  def set_offset_at(requesting_pid, datetime = %DateTime{}, offset) do
+  def set_offset_at(datetime = %DateTime{}, offset) do
     erltime = datetime |> DateTime.to_naive |> NaiveDateTime.to_erl
 
-    Store.update(requesting_pid, fn state ->
-      state |> Map.put({:offset_at, erltime}, offset)
+    Store.update(fn state ->
+      Map.put(state, {:offset_at, erltime}, offset)
     end)
   end
 
-  def send_message(requesting_pid, msg) do
-    send_messages(requesting_pid, [msg])
-  end
-
-  def send_messages(requesting_pid, messages) do
-    Store.update(requesting_pid, fn state ->
-      state |> Map.put(:messages, messages)
+  def send_messages(topic, partition, [%Message{} | _] = messages) do
+    Store.update(fn state ->
+      Map.put(state, {:produce, topic, partition}, messages)
     end)
   end
 
-  def read_messages(topic, partition, requesting_pid) do
-    Store.get({:produce, topic, partition}, [], requesting_pid)
+  def read_messages(topic, partition) do
+    Store.get({:produce, topic, partition}, [])
+    |> Enum.map(fn %{value: msg} -> msg end)
   end
 
-  def last_committed_offset_for(requesting_pid, consumer_group, topic, partition) do
-    last_committed_offset_for(requesting_pid, consumer_group, topic, partition, 100)
+  def last_committed_offset_for(consumer_group, topic, partition) do
+    last_committed_offset_for(consumer_group, topic, partition, 100)
   end
-  def last_committed_offset_for(_requesting_pid, _consumer_group, _topic, _partition, 0), do: nil
-  def last_committed_offset_for(requesting_pid, consumer_group, topic, partition, tries_remaining) do
-    case Store.get({:offset_commit, consumer_group, topic, partition}, nil, requesting_pid) do
+  def last_committed_offset_for(_consumer_group, _topic, _partition, 0), do: nil
+  def last_committed_offset_for(consumer_group, topic, partition, tries_remaining) do
+    case Store.get({:offset_commit, consumer_group, topic, partition}, nil) do
       nil ->
         :timer.sleep(1)
-        last_committed_offset_for(requesting_pid, consumer_group, topic, partition, tries_remaining - 1)
+        last_committed_offset_for(consumer_group, topic, partition, tries_remaining - 1)
       x -> x
     end
   end

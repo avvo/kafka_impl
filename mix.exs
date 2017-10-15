@@ -15,7 +15,8 @@ defmodule KafkaImpl.Mixfile do
   end
 
   def application do
-    [applications: []]
+    [extra_applications: [:logger],
+     applications: []]
   end
 
   defp deps do
