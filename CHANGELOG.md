@@ -5,6 +5,10 @@ CHANGELOG inspiration from http://keepachangelog.com/.
 
 ## Unreleased
 
+## [0.4.5] - October 10, 2017
+* Remove unused NullHandler
+* Extract KafkaImpl.Util.kafka_ex_worker helper function
+
 ## [0.4.4] - August 30, 2017
 * Rename @impl attribute for Elixir 1.5 compatibility
 

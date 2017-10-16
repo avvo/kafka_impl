@@ -10,12 +10,13 @@ defmodule KafkaImpl.Mixfile do
       elixir: "~> 1.4",
       package: package(),
       start_permanent: Mix.env == :prod,
-      version: "0.4.4"
+      version: "0.4.5"
     ]
   end
 
   def application do
-    [applications: []]
+    [extra_applications: [:logger],
+     applications: []]
   end
 
   defp deps do

@@ -3,12 +3,34 @@ defmodule KafkaImpl.KafkaMockTest do
 
   alias KafkaImpl.KafkaMock
   alias KafkaImpl.KafkaMock.TestHelper
+  alias KafkaEx.Protocol.Fetch.Message, as: FetchMessage
+
+  defmodule TestProcess do
+    use GenServer
+
+    def start_link(func \\ (fn -> nil end)) do
+      GenServer.start_link(__MODULE__, func)
+    end
+
+    def init(func) do
+      func.()
+      {:ok, func}
+    end
+
+    def handle_info({:spawn_child, func}, state) do
+      {:ok, _} = start_link(func)
+      {:noreply, state}
+    end
+  end
+
+  defp new_link() do
+    {:ok, pid} = TestProcess.start_link()
+    pid
+  end
 
   setup do
-    :ok = case KafkaMock.start_link do
-      {:ok, _mock} -> :ok
-      {:error, {:already_started, _pid}} -> :ok
-    end
+    KafkaMock.start_link
+    KafkaMock.Store.register_storage_pid(self())
 
     :ok
   end
@@ -16,7 +38,7 @@ defmodule KafkaImpl.KafkaMockTest do
   describe "metadata" do
     test "can set and retrieve topics" do
       assert [] == KafkaMock.metadata.topic_metadatas
-      TestHelper.set_topics(self(), ["foo", "bar"])
+      TestHelper.set_topics(["foo", "bar"])
       assert ["foo", "bar"] == KafkaMock.metadata.topic_metadatas |>
         Enum.map(& Map.get(&1, :topic))
     end
@@ -33,9 +55,9 @@ defmodule KafkaImpl.KafkaMockTest do
   describe "fetch" do
     test "can set and retrieve messaages" do
       topic = "foo"
-      offset = 100
+      offset = 0
       partition = 0
-      message = "the message"
+      message = %FetchMessage{value: "the message", offset: offset}
 
       assert [%KafkaEx.Protocol.Fetch.Response{
         topic: topic,
@@ -44,7 +66,9 @@ defmodule KafkaImpl.KafkaMockTest do
         ]
       }] == KafkaMock.fetch(topic, partition, offset: offset)
 
-      TestHelper.send_message(self(), {topic, partition, message, offset})
+      TestHelper.send_messages(topic, partition, [
+        message
+      ])
 
       assert [%KafkaEx.Protocol.Fetch.Response{
         topic: topic,
@@ -56,10 +80,10 @@ defmodule KafkaImpl.KafkaMockTest do
 
     test "can receive multiple messages" do
       topic = "foo"
-      offset = 100
+      offset = 0
       partition = 0
-      message1 = "the message"
-      message2 = "second message"
+      message1 = %FetchMessage{value: "the message", offset: offset}
+      message2 = %FetchMessage{value: "second message", offset: offset+1}
 
       assert [%KafkaEx.Protocol.Fetch.Response{
         topic: topic,
@@ -68,23 +92,26 @@ defmodule KafkaImpl.KafkaMockTest do
         ]
       }] == KafkaMock.fetch(topic, partition, offset: offset)
 
-      TestHelper.send_messages(self(), [
-        {topic, partition, message1, offset},
-        {topic, partition, message2, offset+1}
-      ])
+      TestHelper.send_messages(topic, partition, [ message1, message2 ])
+
+      expected_offset = offset + 1
 
       assert [%KafkaEx.Protocol.Fetch.Response{
-        topic: topic,
+        topic: ^topic,
         partitions: [
-          %{partition: partition, message_set: [message1, message2], last_offset: offset+1}
+          %{
+            partition: ^partition,
+            message_set: [^message1, ^message2],
+            last_offset: ^expected_offset
+          }
         ]
-      }] == KafkaMock.fetch(topic, partition, offset: offset)
+      }] = KafkaMock.fetch(topic, partition, offset: offset)
     end
   end
 
   test "offset_commit" do
     topic = "foo"
-    offset = 100
+    offset = 0
     assert %KafkaEx.Protocol.OffsetCommit.Response{topic: topic, partitions: [offset]} ==
       KafkaMock.offset_commit(:some_worker_pid, %{topic: topic, offset: offset, partition: 0,
         consumer_group: "kafka_impl"})
@@ -103,6 +130,35 @@ defmodule KafkaImpl.KafkaMockTest do
       }]
     } |> KafkaMock.produce
 
-    assert [^message] = TestHelper.read_messages topic, partition, self()
+    assert [^message] = TestHelper.read_messages topic, partition
+  end
+
+  test "process tree inheritance" do
+    topic = "fooz"
+    partition = 1
+    message = "okay do it"
+    request = %KafkaEx.Protocol.Produce.Request{
+      topic:         topic,
+      partition:     partition,
+      required_acks: 1,
+      messages:      [%KafkaEx.Protocol.Produce.Message{
+        value: message
+      }]
+    }
+
+    test_pid = self()
+    pid = new_link()
+    send pid, {:spawn_child, fn ->
+      KafkaMock.produce(request)
+      send test_pid, :produced
+    end}
+
+    :ok = receive do
+      :produced -> :ok
+    after
+      1000 -> raise "no message produced after 1s"
+    end
+
+    assert [^message] = TestHelper.read_messages topic, partition
   end
 end

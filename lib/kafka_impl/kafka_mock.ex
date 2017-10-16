@@ -62,10 +62,11 @@ defmodule KafkaImpl.KafkaMock do
   def fetch(topic, partition, opts \\ []) do
     offset = Keyword.get(opts, :offset, 0)
 
-    records = Store.get(:messages, [])
-    |> Enum.filter(fn {^topic, ^partition, _, msg_offset} -> msg_offset >= offset; _ -> false end)
+    message_set = messages_key(topic, partition)
+    |> Store.get([])
+    |> Enum.filter(fn %{offset: msg_offset} -> msg_offset >= offset end)
 
-    last_offset = records |> Enum.reduce(nil, fn {_,_,_,msg_offset}, acc ->
+    last_offset = Enum.reduce(message_set, nil, fn %{offset: msg_offset}, acc ->
       cond do
         acc == nil -> msg_offset
         acc > msg_offset -> acc
@@ -73,27 +74,41 @@ defmodule KafkaImpl.KafkaMock do
       end
     end)
 
-    messages = records |> Enum.map(fn {_,_,msg,_} -> msg end)
-
     [%KafkaEx.Protocol.Fetch.Response{
       topic: topic,
       partitions: [
-        %{partition: partition, message_set: messages, last_offset: last_offset}
+        %{partition: partition, message_set: message_set, last_offset: last_offset}
       ]
     }]
   end
 
-  def produce(%{topic: topic, partition: partition, messages: [%{value: message}]}, _opts \\ []) do
-    Store.update(self(), fn state ->
-      key = {:produce, topic, partition}
-      existing_messages = state |> Map.get(key, [])
-      state |> Map.put(key, [message | existing_messages])
+  def produce(%KafkaEx.Protocol.Produce.Request{
+    topic: topic, partition: partition, messages: [
+      %KafkaEx.Protocol.Produce.Message{} = message
+    ]
+  }, _opts \\ []) do
+    Store.update(fn state ->
+      key = messages_key(topic, partition)
+
+      existing_records = Map.get(state, key, [])
+
+      offset = Enum.reduce(existing_records, -1, fn %{offset: offset}, acc ->
+        if offset > acc, do: offset, else: acc
+      end) + 1
+
+      record = %KafkaEx.Protocol.Fetch.Message{
+        value: message.value,
+        offset: offset
+      }
+
+      state
+      |> Map.put(key, [record | existing_records])
     end)
   end
 
   def offset_commit(_worker, %{consumer_group: consumer_group, topic: topic, partition: partition, offset: offset}) do
-    Store.update(self(), fn state ->
-      state |> Map.put({:offset_commit, consumer_group, topic, partition}, offset)
+    Store.update(fn state ->
+      Map.put(state, {:offset_commit, consumer_group, topic, partition}, offset)
     end)
 
     %KafkaEx.Protocol.OffsetCommit.Response{topic: topic, partitions: [offset]}
@@ -110,5 +125,9 @@ defmodule KafkaImpl.KafkaMock do
         ]
       }
     ]
+  end
+
+  defp messages_key(topic, partition) do
+    {:produce, topic, partition}
   end
 end
