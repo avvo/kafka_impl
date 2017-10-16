@@ -2,9 +2,7 @@ defmodule KafkaImpl.KafkaMock.Store do
   @agent_name __MODULE__
 
   def start_link do
-    {:ok, pid} = Agent.start_link(fn -> %{} end, name: @agent_name)
-    register_storage_pid(self())
-    {:ok, pid}
+    Agent.start_link(fn -> %{} end, name: @agent_name)
   end
 
   def get(key, default) do
@@ -54,8 +52,8 @@ defmodule KafkaImpl.KafkaMock.Store do
 
   defp get_ancestors(pid) do
     case Process.info(pid, [:dictionary]) do
-      [dictionary: dictionary] -> Keyword.get(dictionary, :"$ancestors")
-      _ -> :error
+      [dictionary: dictionary] -> Keyword.get(dictionary, :"$ancestors", [])
+      _ -> []
     end
   end
 end

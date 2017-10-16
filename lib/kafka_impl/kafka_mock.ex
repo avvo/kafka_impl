@@ -3,8 +3,6 @@ defmodule KafkaImpl.KafkaMock do
 
   alias KafkaImpl.KafkaMock.Store
 
-  alias KafkaEx.Protocol.Fetch.Message
-
   defdelegate start_link, to: Store
 
   ## Actual Kafka interface

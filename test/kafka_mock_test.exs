@@ -30,6 +30,7 @@ defmodule KafkaImpl.KafkaMockTest do
 
   setup do
     KafkaMock.start_link
+    KafkaMock.Store.register_storage_pid(self())
 
     :ok
   end

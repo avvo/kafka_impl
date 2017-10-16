@@ -59,6 +59,7 @@ defmodule KafkaImpl.KafkaMock.StoreTest do
 
   test "registering a pid is used for storage" do
     Store.start_link
+    Store.register_storage_pid(self())
 
     parent = new_link()
     test_pid = self()
@@ -81,6 +82,7 @@ defmodule KafkaImpl.KafkaMock.StoreTest do
 
   test "get looks up the parent for storage" do
     Store.start_link
+    Store.register_storage_pid(self())
 
     parent = new_link()
 
@@ -95,6 +97,7 @@ defmodule KafkaImpl.KafkaMock.StoreTest do
 
   test "both update and get in children" do
     Store.start_link
+    Store.register_storage_pid(self())
 
     parent1 = new_link()
     test_pid = self()
@@ -117,5 +120,45 @@ defmodule KafkaImpl.KafkaMock.StoreTest do
     send parent2, {:spawn_child, fn ->
       assert "bar" == Store.get(:foo, nil)
     end}
+  end
+
+  test "Store and Kafka in separate trees" do
+    parent1 = new_link()
+    test_pid = self()
+
+    send parent1, {:spawn_child, fn ->
+      Store.start_link
+      Store.register_storage_pid(self())
+      send test_pid, :proceed1
+    end}
+
+    receive do
+      :proceed1 -> :ok
+    after
+      100 -> raise "didn't get the message to proceed"
+    end
+
+    parent2 = new_link()
+
+    send parent2, {:spawn_child, fn ->
+      Store.update(fn state ->
+        Map.put(state, :foo, "bar")
+      end)
+      send test_pid, :proceed2
+    end}
+
+    receive do
+      :proceed2 -> :ok
+    after
+      100 -> raise "didn't get the message to proceed"
+    end
+
+    parent3 = new_link()
+
+    send parent3, {:spawn_child, fn ->
+      send test_pid, {:message, Store.get(:foo, nil)}
+    end}
+
+    assert_receive {:message, "bar"}
   end
 end
