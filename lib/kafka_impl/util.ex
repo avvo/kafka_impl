@@ -41,4 +41,5 @@ defmodule KafkaImpl.Util do
   def kafka_ex_worker("0.8.0"), do: KafkaEx.Server0P8P0
   def kafka_ex_worker("0.8.2"), do: KafkaEx.Server0P8P2
   def kafka_ex_worker("0.9.0"), do: KafkaEx.Server0P9P0
+  def kafka_ex_worker(_), do: KafkaEx.Server0P10AndLater
 end
