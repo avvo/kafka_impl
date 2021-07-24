@@ -15,6 +15,13 @@ defmodule KafkaImpl.Util do
   def extract_messages(_), do: {:error, "Can't extract messages"}
 
   def kafka_brokers do
+    case KafkaEx.Config.brokers() do
+       [_ | _] = brokers -> {:ok, brokers}
+       _ -> get_brokers_from_default_env_var()
+    end
+  end
+
+  defp get_brokers_from_default_env_var do
     case System.get_env("KAFKA_HOSTS") do
       nil -> {:error, "You must define KAFKA_HOSTS."}
       hosts -> brokers_parse(hosts)
